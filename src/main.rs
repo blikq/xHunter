@@ -6,6 +6,9 @@ use rand::{self, Rng};
 
 // const player_id: i32 = rand::thread_rng().gen_range(1000..9999);
 
+//TODO: implement delete obsolete bullets
+//TODO: Find way to efficiently store data and keep state
+
 #[derive(Component)]
 enum Direction {
     Up,
@@ -130,7 +133,7 @@ fn init_bullets(
 
             commands.spawn((MaterialMesh2dBundle {
                 mesh: meshes
-                    .add(shape::Quad::new(Vec2::new(3., 20.)).into())
+                    .add(shape::Quad::new(Vec2::new(3., 10.)).into())
                     .into(),
                 material: materials.add(ColorMaterial::from(Color::LIME_GREEN)),
                 transform: Transform {
@@ -153,20 +156,20 @@ fn up_del_bullets(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut bullets: Query<(&mut Bullet, &mut Transform,)>,
+    mut bullets: Query<(&mut Bullet, &mut Transform, Entity), With<Bullet>>,
 ) {
-    for (bullet, mut transform) in &mut bullets {
+    for (bullet, mut transform, entity) in &mut bullets {
         match bullet.direction {
             Direction::Up => transform.translation.y += ((get_unix_time() - bullet.time)+2.0) as f32,
             Direction::Left => transform.translation.x -= ((get_unix_time() - bullet.time)+2.0) as f32,
             Direction::Down => transform.translation.y -= ((get_unix_time() - bullet.time)+2.0) as f32,
             Direction::Right => transform.translation.x += ((get_unix_time() - bullet.time)+2.0) as f32,
         }
+        if (get_unix_time() - bullet.time) >= 5.0{
+            commands.entity(entity).despawn();
+        }
     }
-    for b in bullets.iter(){
-        // commands.entity(b).despawn();
 
-    }
 
 }
 
