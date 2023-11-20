@@ -16,9 +16,9 @@ tokio = {version="1.33.0", features=["full"]}
 rand = "*"
 
 
-[lib]
-name = "database"
-path = "src/database/mod.rs"
+# [lib]
+# name = "database"
+# path = "src/database/mod.rs"
 
 
 [workspace]
